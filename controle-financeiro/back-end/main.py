@@ -15,17 +15,17 @@ class MovimentacaoFinanceira(BaseModel):
 def adicionar_transacao(nova_transacao: MovimentacaoFinanceira):
     for transacao in transacoes:
         if nova_transacao.id == transacao.id:
-            return (f"Já existe transação utilizando o ID {nova_transacao.id}")
+            return {"erro": f"Já existe transação utilizando o ID {nova_transacao.id}"}
     transacoes.append(nova_transacao)
-    return(f"Transação de ID {nova_transacao.id} adicionada com sucesso.")
+    return {"mensagem": f"Transação de ID {nova_transacao.id} adicionada com sucesso."}
     
 @app.delete("/transacoes/{id}")
 def remover_transacao(id: int):
     for transacao in transacoes:
         if id == transacao.id: 
             transacoes.remove(transacao)
-            return (f"Transação de ID {id} removida com sucesso.")
-    return (f"Não existe transação com o ID {id}")
+            return {"mensagem": f"Transação de ID {id} removida com sucesso."}
+    return {"erro": f"Não existe transação com o ID {id}"}
     
 @app.get("/transacoes/{id}")
 def visualizar_transacao(id: int):
@@ -40,10 +40,11 @@ def visualizar_todas_transacoes():
 
 @app.put("/transacoes/{id}")
 def alterar_transacao(id: int, nova_transacao: MovimentacaoFinanceira):
-    for transacao in transacoes:
+    for i, transacao in enumerate(transacoes):
         if id == transacao.id:
-            transacoes.remove(transacao)
-            transacoes.append(nova_transacao)
-            return (f"Transação {id} alterada com sucesso.")
-    return (f"Não foi possível alterar a transação ID {id}.")
+            if nova_transacao.id != transacao.id:
+                return {"erro": "ID da Transação não pode ser alterado."}
+            transacoes[i] = nova_transacao
+            return {"mensagem": f"Transação {id} alterada com sucesso."}
+    return {"erro": f"Não foi possível alterar a transação ID {id}."}
 
