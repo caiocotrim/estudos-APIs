@@ -38,6 +38,16 @@ def visualizar_transacao(id: int):
 def visualizar_todas_transacoes():
     return transacoes
 
+@app.get("/saldo")
+def visualizar_saldo():
+    saldo = 0
+    for transacao in transacoes:
+        if transacao.tipo == "ENTRADA":
+            saldo = saldo + transacao.valor
+        if transacao.tipo == "SAÍDA":
+            saldo = saldo - transacao.valor
+    return {"mensagem": f"Saldo atual: R${saldo}"}
+
 @app.put("/transacoes/{id}")
 def alterar_transacao(id: int, nova_transacao: MovimentacaoFinanceira):
     for i, transacao in enumerate(transacoes):
