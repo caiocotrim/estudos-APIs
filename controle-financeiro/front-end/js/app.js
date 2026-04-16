@@ -30,17 +30,23 @@ function limpar_inputs() {
 
 }
 
-function inputs_alterar_transacao(id) {
+async function inputs_alterar_transacao(id) {
+    const response = await fetch(`${API_URL}/transacoes/${id}`, {
+        method: "GET"
+    });
+
+    const data = await response.json();
+
     const inputs_alterar = document.getElementById("inputs_alterar");
 
     inputs_alterar.innerHTML = `
-        <input id="id" value="${id}" readonly><br><br>
-        <input id="valor" placeholder="Valor"><br><br>
-        <input id="tipo" placeholder="Tipo"><br><br>
-        <input id="descricao" placeholder="Descricao"><br><br>
+        <input id="id" value="${data.id}" readonly><br><br>
+        <input id="valor" value="${data.valor}" placeholder="Valor"><br><br>
+        <input id="tipo" value="${data.tipo}" placeholder="Tipo"><br><br>
+        <input id="descricao" value="${data.descricao}" placeholder="Descricao"><br><br>
 
         <button onclick="location.reload()">Cancelar</button>
-        <button onclick="alterar_transacao(${id})">Confirmar</button>
+        <button onclick="alterar_transacao(${data.id})">Confirmar</button>
     `;
 }
 
@@ -224,7 +230,7 @@ async function visualizar_alterar_transacao() {
     }    
 }
 
-async function alterar_transacao(id) {;
+async function alterar_transacao(id) {
     const info_alterar_transacao = document.getElementById("info_alterar_transacao"); 
     const valor = document.getElementById("valor").value;
     const tipo = document.getElementById("tipo").value;
@@ -252,7 +258,6 @@ async function alterar_transacao(id) {;
         return
     } else {
         info_alterar_transacao.innerHTML = `Transação ID ${id} alterada com sucesso.`;
-        return
     }
 
     carregar_saldo();
