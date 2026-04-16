@@ -1,14 +1,24 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import Literal
+from fastapi.middleware.cors import CORSMiddleware
+
 
 app = FastAPI()
 transacoes = []
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 class MovimentacaoFinanceira(BaseModel):
     id: int
     valor: float
-    tipo: Literal["ENTRADA", "SAÍDA"]
+    tipo: Literal["ENTRADA", "SAIDA"]
     descricao: str
 
 @app.post("/transacoes")
@@ -44,7 +54,7 @@ def visualizar_saldo():
     for transacao in transacoes:
         if transacao.tipo == "ENTRADA":
             saldo = saldo + transacao.valor
-        if transacao.tipo == "SAÍDA":
+        if transacao.tipo == "SAIDA":
             saldo = saldo - transacao.valor
     return {"mensagem": f"Saldo atual: R${saldo}"}
 
