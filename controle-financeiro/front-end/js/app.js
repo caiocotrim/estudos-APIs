@@ -30,6 +30,20 @@ function limpar_inputs() {
 
 }
 
+function inputs_alterar_transacao(id) {
+    const inputs_alterar = document.getElementById("inputs_alterar");
+
+    inputs_alterar.innerHTML = `
+        <input id="id" value="${id}" readonly><br><br>
+        <input id="valor" placeholder="Valor"><br><br>
+        <input id="tipo" placeholder="Tipo"><br><br>
+        <input id="descricao" placeholder="Descricao"><br><br>
+
+        <button onclick="location.reload()">Cancelar</button>
+        <button onclick="alterar_transacao(${id})">Confirmar</button>
+    `;
+}
+
 async function carregar_saldo() {
     const response = await fetch(`${API_URL}/saldo`, {
         method: "GET"
@@ -45,7 +59,7 @@ async function adicionar_transacao() {
     const tipo = document.getElementById("tipo").value;
     const descricao = document.getElementById("descricao").value;
     
-    const tipo_normalizado = tipo.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");;
+    const tipo_normalizado = tipo.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
 
     const response = await fetch(`${API_URL}/transacoes`, {
         method: "POST", 
@@ -90,7 +104,7 @@ async function remover_transacao(id) {
         resultado.innerHTML = `<br>Erro: ${data.erro}`;
         return
     } else {
-        resultado.innerHTML= `<br>Transação de ID ${id} excluída.`;
+        resultado.innerHTML= `<br>Transação ID ${id} excluída.`;
         limpar_inputs();
     }
 
@@ -120,7 +134,7 @@ async function visualizar_para_remover_transacao() {
             Descrição: ${data.descricao}<br>
             <br>
 
-            <button onclick="limpar_inputs()">Cancelar</button>
+            <button onclick="location.reload()">Cancelar</button>
             <button onclick="remover_transacao(${data.id})">Remover Transação</button>
         `;
     }
@@ -181,4 +195,65 @@ async function visualizar_todas_transacoes() {
         resultado.innerHTML = html;
     }
         
+}
+
+async function visualizar_alterar_transacao() {
+    const id = document.getElementById("id").value;
+    const resultado = document.getElementById("resultado");
+
+    const response = await fetch(`${API_URL}/transacoes/${id}`, {
+        method: "GET"
+    });
+
+    const data = await response.json();
+
+    if(data.erro){
+        resultado.innerHTML = `<br>Erro: ${data.erro}`;
+        return
+    } else {
+        resultado.innerHTML = `
+        <br>ID: ${data.id},<br>
+        Valor: ${data.valor},<br>
+        Tipo: ${data.tipo},<br>
+        Descricao: ${data.descricao},<br>
+        <br>
+
+        <button onclick="location.reload()">Cancelar</button>
+        <button onclick="inputs_alterar_transacao(${data.id})">Alterar Transação</button>
+    `;
+    }    
+}
+
+async function alterar_transacao(id) {;
+    const info_alterar_transacao = document.getElementById("info_alterar_transacao"); 
+    const valor = document.getElementById("valor").value;
+    const tipo = document.getElementById("tipo").value;
+    const descricao = document.getElementById("descricao").value;
+
+    const tipo_normalizado = tipo.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+
+    const response = await fetch(`${API_URL}/transacoes/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify ({
+            id: Number(id),
+            valor: parseFloat(valor),
+            tipo: tipo_normalizado,
+            descricao: descricao
+        }) 
+    });
+
+    const data = await response.json();
+
+    if(data.erro){
+        info_alterar_transacao.innerHTML = `Erro: ${data.erro}`;
+        return
+    } else {
+        info_alterar_transacao.innerHTML = `Transação ID ${id} alterada com sucesso.`;
+        return
+    }
+
+    carregar_saldo();
 }

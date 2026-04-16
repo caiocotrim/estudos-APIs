@@ -3,7 +3,6 @@ from pydantic import BaseModel
 from typing import Literal
 from fastapi.middleware.cors import CORSMiddleware
 
-
 app = FastAPI()
 transacoes = []
 
@@ -67,4 +66,3 @@ def alterar_transacao(id: int, nova_transacao: MovimentacaoFinanceira):
             transacoes[i] = nova_transacao
             return {"mensagem": f"Transação {id} alterada com sucesso."}
     return {"erro": f"Não foi possível alterar a transação ID {id}."}
-
