@@ -218,10 +218,10 @@ async function visualizar_alterar_transacao() {
         return
     } else {
         resultado.innerHTML = `
-        <br>ID: ${data.id},<br>
-        Valor: ${data.valor},<br>
-        Tipo: ${data.tipo},<br>
-        Descricao: ${data.descricao},<br>
+        <br>ID: ${data.id}<br>
+        Valor: ${data.valor}<br>
+        Tipo: ${data.tipo}<br>
+        Descricao: ${data.descricao}<br>
         <br>
 
         <button onclick="location.reload()">Cancelar</button>
@@ -232,6 +232,9 @@ async function visualizar_alterar_transacao() {
 
 async function alterar_transacao(id) {
     const info_alterar_transacao = document.getElementById("info_alterar_transacao"); 
+    const inputs_alterar = document.getElementById("inputs_alterar");
+    const resultado = document.getElementById("resultado");
+
     const valor = document.getElementById("valor").value;
     const tipo = document.getElementById("tipo").value;
     const descricao = document.getElementById("descricao").value;
@@ -258,6 +261,8 @@ async function alterar_transacao(id) {
         return
     } else {
         info_alterar_transacao.innerHTML = `Transação ID ${id} alterada com sucesso.`;
+        inputs_alterar.innerHTML = ``;
+        resultado.innerHTML = ``;
     }
 
     carregar_saldo();
